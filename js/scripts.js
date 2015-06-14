@@ -1,3 +1,5 @@
+var queue = [];
+
 // 2. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
 
@@ -30,21 +32,17 @@ function onPlayerReady(event) {
 //    the player should play for six seconds and then stop.
 var done = false;
 function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.ENDED) {
-
+  if (event.data == YT.PlayerState.ENDED && queue.length > 0) {
+    nextVideo = queue.shift();
+    console.log("video finished! nextVideo = " + nextVideo);
+    player.loadVideoById(nextVideo);
+    drawPage();
   }
 }
-function stopVideo() {
-  player.stopVideo();
-}
-
-
 
 // jQuery
 
 $(document).ready(function() {
-
-  var queue = [];
 
   $("#changeVideo").click(function(event) {
     event.preventDefault()
@@ -63,7 +61,7 @@ $(document).ready(function() {
     $("input#videoUrl").val("");
   });
 
-  function drawPage() {
+  drawPage = function drawPage() {
     $("#queue").empty();
     for(var i = 0; i < queue.length; i++) {
       $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i] + '/default.jpg"/> </li>');
