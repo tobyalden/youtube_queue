@@ -47,8 +47,9 @@ $(document).ready(function() {
   $("#changeVideo").click(function(event) {
     event.preventDefault()
     console.log("changeVideo clicked");
-    url = $("input#videoUrl").val();
-    player.loadVideoById(getIdFromUrl(url));
+    var url = $("input#videoUrl").val();
+    var id = getIdFromUrl(url);
+    player.loadVideoById(id);
     $("input#videoUrl").val("");
   });
 
@@ -77,5 +78,34 @@ $(document).ready(function() {
       console.log("Error: Invalid URL");
     }
   }
+
+  $("#getInfo").on("click", function() {
+        var url = $("input#videoUrl").val();
+        var videoid = getIdFromUrl(url);
+				$.getJSON("https://www.googleapis.com/youtube/v3/videos", {
+					key: "AIzaSyDEeNLNCbn1bVKlSr36mhssp37QO8n-Cfw",
+					part: "snippet,statistics",
+					id: videoid
+				}, function(data) {
+					if (data.items.length === 0) {
+						$("<p style='color: #F00;'>Video not found.</p>").appendTo("#video-data-1");
+						return;
+					}
+					$("<img>", {
+						src: data.items[0].snippet.thumbnails.medium.url,
+						width: data.items[0].snippet.thumbnails.medium.width,
+						height: data.items[0].snippet.thumbnails.medium.height
+					}).appendTo("#video-data-1");
+					$("<h1></h1>").text(data.items[0].snippet.title).appendTo("#video-data-1");
+					$("<p></p>").text(data.items[0].snippet.description).appendTo("#video-data-1");
+					$("<li></li>").text("Published at: " + data.items[0].snippet.publishedAt).appendTo("#video-data-2");
+					$("<li></li>").text("View count: " + data.items[0].statistics.viewCount).appendTo("#video-data-2");
+					$("<li></li>").text("Favorite count: " + data.items[0].statistics.favoriteCount).appendTo("#video-data-2");
+					$("<li></li>").text("Like count: " + data.items[0].statistics.likeCount).appendTo("#video-data-2");
+					$("<li></li>").text("Dislike count: " + data.items[0].statistics.dislikeCount).appendTo("#video-data-2");
+				}).fail(function(jqXHR, textStatus, errorThrown) {
+					$("<p style='color: #F00;'></p>").text(jqXHR.responseText || errorThrown).appendTo("#video-data-1");
+				});
+			});
 
 });
