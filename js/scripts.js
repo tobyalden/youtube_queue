@@ -22,7 +22,7 @@ function onYouTubeIframeAPIReady() {
 
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-  event.target.playVideo();
+  // event.target.playVideo();
 }
 
 // 5. The API calls this function when the player's state changes.
@@ -30,33 +30,54 @@ function onPlayerReady(event) {
 //    the player should play for six seconds and then stop.
 var done = false;
 function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING && !done) {
-    setTimeout(stopVideo, 6000);
-    done = true;
+  if (event.data == YT.PlayerState.ENDED) {
+
   }
 }
 function stopVideo() {
   player.stopVideo();
 }
 
+
+
 // jQuery
 
 $(document).ready(function() {
-  $("#changeVideo").submit(function(event) {
+
+  var queue = [];
+
+  $("#changeVideo").click(function(event) {
     event.preventDefault()
+    console.log("changeVideo clicked");
     url = $("input#videoUrl").val();
     player.loadVideoById(getIdFromUrl(url));
     $("input#videoUrl").val("");
   });
 
+  $("#queueVideo").click(function(event) {
+    event.preventDefault()
+    console.log("queueVideo clicked");
+    url = $("input#videoUrl").val();
+    queue.push(getIdFromUrl(url));
+    drawPage();
+    $("input#videoUrl").val("");
+  });
+
+  function drawPage() {
+    $("#queue").empty();
+    for(var i = 0; i < queue.length; i++) {
+      $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i] + '/default.jpg"/> </li>');
+    }
+  }
+
   function getIdFromUrl(url) {
     var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     var match = url.match(regExp);
     if (match && match[2].length == 11) {
-      console.log(match[2]);
       return match[2];
     } else {
       console.log("Error: Invalid URL");
     }
   }
+
 });

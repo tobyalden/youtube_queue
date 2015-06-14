@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>IFrame Test</title>
     <script src="js/jquery-1.11.3.js"></script>
     <script src="js/scripts.js"></script>
   </head>
@@ -8,9 +9,15 @@
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div id="player"></div>
 
-    <form id="changeVideo">
-      <input id="videoUrl" type="text" placeholder="https://www.youtube.com/watch?v=RDAXw9gXrFU">
-      <button type="submit">Change Video</button>
-    </form>
+    <input id="videoUrl" type="text" placeholder="https://www.youtube.com/watch?v=RDAXw9gXrFU">
+    <button id="changeVideo">Change Video</button>
+    <button id="queueVideo">Queue Video</button>
+
+    <hr>
+
+    <ol id="queue">
+
+    </ol>
+
   </body>
 </html>
