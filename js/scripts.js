@@ -42,8 +42,21 @@ function stopVideo() {
 // jQuery
 
 $(document).ready(function() {
-  $("#changeVideo").click(function(event) {
+  $("#changeVideo").submit(function(event) {
     event.preventDefault()
-    player.loadVideoById("dD4XLVyRdD4");
+    url = $("input#videoUrl").val();
+    player.loadVideoById(getIdFromUrl(url));
+    $("input#videoUrl").val("");
   });
+
+  function getIdFromUrl(url) {
+    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = url.match(regExp);
+    if (match && match[2].length == 11) {
+      console.log(match[2]);
+      return match[2];
+    } else {
+      console.log("Error: Invalid URL");
+    }
+  }
 });
