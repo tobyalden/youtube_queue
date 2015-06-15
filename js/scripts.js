@@ -82,7 +82,7 @@ $(document).ready(function() {
   drawPage = function drawPage() {
     $("#queue").empty();
     for(var i = 0; i < queue.length; i++) {
-      $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i].id + '/default.jpg"/>' + '<p>' + queue[i].title + '</p>' + '</li>');
+      $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i].id + '/default.jpg"/> ' + parseDuration(queue[i].duration) + '<p>' + queue[i].title + '</p>' + '</li> <hr>');
     }
   }
 
@@ -96,14 +96,27 @@ $(document).ready(function() {
     }
   }
 
-  $("#getInfo").on("click", function() {
-    event.preventDefault()
-    var url = $("input#videoUrl").val();
-    var id = getIdFromUrl(url);
+  // i.e. PT10M PT1M47S PT1H1S
+  function parseDuration(duration) {
+    var returnStr = "";
 
+    var numberRegex = /(\d+)/g;
+    var numericArray = duration.match(numberRegex);
 
+    var letterRegex = /[a-zA-Z]+/g;
+    var letterArray = duration.match(letterRegex);
+    letterArray.shift();
 
-	});
+    var durationUnits = {
+      "S": " sec ",
+      "M": " min ",
+      "H": " hour "
+    };
 
+    for(var i = 0; i < numericArray.length; i++) {
+      returnStr += numericArray[i] + durationUnits[letterArray[i]];
+    }
+    return returnStr;
+  }
 
 });
