@@ -1,4 +1,5 @@
 var queue = [];
+var title = "";
 
 // 2. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
@@ -56,16 +57,32 @@ $(document).ready(function() {
   $("#queueVideo").click(function(event) {
     event.preventDefault()
     console.log("queueVideo clicked");
-    url = $("input#videoUrl").val();
-    queue.push(getIdFromUrl(url));
-    drawPage();
+    var url = $("input#videoUrl").val();
+    var id = getIdFromUrl(url);
+
+    $.getJSON("https://www.googleapis.com/youtube/v3/videos", {
+      key: "AIzaSyDEeNLNCbn1bVKlSr36mhssp37QO8n-Cfw",
+      part: "snippet, contentDetails",
+      id: id
+    }, function(data) {
+      var video = {
+        title: data.items[0].snippet.title,
+        duration: data.items[0].contentDetails.duration,
+        id: id
+      };
+      queue.push(video);
+      drawPage();
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+      $("<p style='color: #F00;'></p>").text(jqXHR.responseText || errorThrown).appendTo("#errors");
+    });
+
     $("input#videoUrl").val("");
   });
 
   drawPage = function drawPage() {
     $("#queue").empty();
     for(var i = 0; i < queue.length; i++) {
-      $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i] + '/default.jpg"/> </li>');
+      $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i].id + '/default.jpg"/>' + '<p>' + queue[i].title + '</p>' + '</li>');
     }
   }
 
@@ -80,32 +97,13 @@ $(document).ready(function() {
   }
 
   $("#getInfo").on("click", function() {
-        var url = $("input#videoUrl").val();
-        var videoid = getIdFromUrl(url);
-				$.getJSON("https://www.googleapis.com/youtube/v3/videos", {
-					key: "AIzaSyDEeNLNCbn1bVKlSr36mhssp37QO8n-Cfw",
-					part: "snippet,statistics",
-					id: videoid
-				}, function(data) {
-					if (data.items.length === 0) {
-						$("<p style='color: #F00;'>Video not found.</p>").appendTo("#video-data-1");
-						return;
-					}
-					$("<img>", {
-						src: data.items[0].snippet.thumbnails.medium.url,
-						width: data.items[0].snippet.thumbnails.medium.width,
-						height: data.items[0].snippet.thumbnails.medium.height
-					}).appendTo("#video-data-1");
-					$("<h1></h1>").text(data.items[0].snippet.title).appendTo("#video-data-1");
-					$("<p></p>").text(data.items[0].snippet.description).appendTo("#video-data-1");
-					$("<li></li>").text("Published at: " + data.items[0].snippet.publishedAt).appendTo("#video-data-2");
-					$("<li></li>").text("View count: " + data.items[0].statistics.viewCount).appendTo("#video-data-2");
-					$("<li></li>").text("Favorite count: " + data.items[0].statistics.favoriteCount).appendTo("#video-data-2");
-					$("<li></li>").text("Like count: " + data.items[0].statistics.likeCount).appendTo("#video-data-2");
-					$("<li></li>").text("Dislike count: " + data.items[0].statistics.dislikeCount).appendTo("#video-data-2");
-				}).fail(function(jqXHR, textStatus, errorThrown) {
-					$("<p style='color: #F00;'></p>").text(jqXHR.responseText || errorThrown).appendTo("#video-data-1");
-				});
-			});
+    event.preventDefault()
+    var url = $("input#videoUrl").val();
+    var id = getIdFromUrl(url);
+
+
+
+	});
+
 
 });
